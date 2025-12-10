@@ -152,14 +152,17 @@ class CreateAccountView extends StatelessWidget {
             SizedBox(height: 10),
             Text("Already have an account?", style: TextStyle(fontSize: 18)),
             SizedBox(height: 5),
-            Text(
-              "Login here",
-              style: TextStyle(
-                fontSize: 18,
-                color: ColorsUtil.primaryColor,
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-                decorationColor: ColorsUtil.primaryColor,
+            GestureDetector(
+              onTap: () => GoRouter.of(context).push('/login'),
+              child: Text(
+                "Login here",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: ColorsUtil.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                  decorationColor: ColorsUtil.primaryColor,
+                ),
               ),
             ),
             SizedBox(height: 80),

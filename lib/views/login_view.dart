@@ -107,16 +107,23 @@ class LoginView extends StatelessWidget {
             SizedBox(height: 60),
             Text("Don't have an account yet ?", style: TextStyle(fontSize: 18)),
             SizedBox(height: 2),
-            Text(
-              "Create an account here",
-              style: TextStyle(
-                fontSize: 18,
-                color: ColorsUtil.primaryColor,
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.underline,
-                decorationColor: ColorsUtil.primaryColor,
+
+            GestureDetector(
+              onTap: () {
+                GoRouter.of(context).push('/createAccount');
+              },
+              child: Text(
+                "Create an account here",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: ColorsUtil.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                  decorationColor: ColorsUtil.primaryColor,
+                ),
               ),
             ),
+
             SizedBox(height: 80),
             SizedBox(
               width: double.infinity,
@@ -124,7 +131,9 @@ class LoginView extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorsUtil.primaryColor,
                 ),
-                onPressed: () {GoRouter.of(context).go('/home');},
+                onPressed: () {
+                  GoRouter.of(context).go('/home');
+                },
                 child: const Text(
                   "Log In",
                   style: TextStyle(fontSize: 18, color: Colors.white),

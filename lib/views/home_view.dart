@@ -70,46 +70,52 @@ class HomeWidget extends StatelessWidget {
           IconButton(onPressed: null, icon: const Icon(Icons.grid_view)),
         ],
       ),
-      drawer: Drawer(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [ColorsUtil.gradiantColor, ColorsUtil.primaryColor],
-            ),
-          ),
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'HaBIT Note',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text('V1.0.0'),
-                    ],
-                  ),
-                ),
-                const Divider(color: Colors.black54),
-                const ListTile(title: Text('Forgot Password')),
-                const ListTile(title: Text('Privacy Policy')),
-                const ListTile(title: Text('Terms of Use')),
-              ],
-            ),
-          ),
-        ),
-      ),
+
+      ///Drawer Disabled ///
+      
+      // drawer: Drawer(
+      //   child: Container(
+      //     decoration: const BoxDecoration(
+      //       gradient: LinearGradient(
+      //         begin: Alignment.topCenter,
+      //         end: Alignment.bottomCenter,
+      //         colors: [ColorsUtil.gradiantColor, ColorsUtil.primaryColor],
+      //       ),
+      //     ),
+      //     child: SafeArea(
+      //       child: Column(
+      //         crossAxisAlignment: CrossAxisAlignment.start,
+      //         children: [
+      //           Padding(
+      //             padding: const EdgeInsets.all(16),
+      //             child: Column(
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               children: const [
+      //                 Text(
+      //                   'HaBIT Note',
+      //                   style: TextStyle(
+      //                     fontSize: 20,
+      //                     fontWeight: FontWeight.bold,
+      //                     fontStyle: FontStyle.italic,
+      //                   ),
+      //                 ),
+      //                 SizedBox(height: 4),
+      //                 Text('V1.0.0'),
+      //               ],
+      //             ),
+      //           ),
+      //           const Divider(color: Colors.black54),
+      //           const ListTile(title: Text('Forgot Password')),
+      //           const ListTile(title: Text('Privacy Policy')),
+      //           const ListTile(title: Text('Terms of Use')),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
+
+
+      
       floatingActionButton: Builder(
         builder: (fabContext) => FloatingActionButton(
           onPressed: () async {
