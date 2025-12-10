@@ -5,4 +5,5 @@ class ColorsUtil {
   static const secondaryColor = Color(0xFFFFFFFF);
   static const backgroundColor = Color(0xFFF1F1F1);
   static const gradiantColor = Color(0xFF787878);
+  static const bottomNavBarColor = Color(0xFFC4C4C4);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:noteale_clone/utils/colors.dart';
 
 class LoginView extends StatelessWidget {
@@ -12,11 +13,11 @@ class LoginView extends StatelessWidget {
         backgroundColor: ColorsUtil.backgroundColor,
         title: const Text('Log In', style: TextStyle(fontSize: 18)),
         leading: IconButton(
-          onPressed: () => {},
+          onPressed: () => {GoRouter.of(context).pop()},
           icon: Icon(Icons.arrow_back, color: ColorsUtil.primaryColor),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +47,6 @@ class LoginView extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
-
             TextFormField(
               decoration: InputDecoration(
                 filled: true,
@@ -72,7 +72,6 @@ class LoginView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-
             TextFormField(
               decoration: InputDecoration(
                 filled: true,
@@ -99,10 +98,15 @@ class LoginView extends StatelessWidget {
               obscureText: true,
             ),
             const SizedBox(height: 12),
-
-            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text("Forgot Password ?", style: TextStyle(fontSize: 18)),
+              ],
+            ),
+            SizedBox(height: 60),
             Text("Don't have an account yet ?", style: TextStyle(fontSize: 18)),
-            SizedBox(height: 4),
+            SizedBox(height: 2),
             Text(
               "Create an account here",
               style: TextStyle(
@@ -110,45 +114,23 @@ class LoginView extends StatelessWidget {
                 color: ColorsUtil.primaryColor,
                 fontWeight: FontWeight.bold,
                 decoration: TextDecoration.underline,
+                decorationColor: ColorsUtil.primaryColor,
               ),
             ),
-
-            SizedBox(height: 100),
-            Text.rich(
-              TextSpan(
-                style: const TextStyle(fontSize: 18),
-                children: [
-                  const TextSpan(text: 'By clicking the “'),
-                  const TextSpan(
-                    text: 'CREATE ACCOUNT',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const TextSpan(text: '” button,\n you agree to '),
-                  const TextSpan(
-                    text: 'Terms of use',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const TextSpan(text: ' and '),
-                  const TextSpan(
-                    text: 'Privacy Policy',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              textAlign: TextAlign.center,
-            ),
+            SizedBox(height: 80),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorsUtil.primaryColor,
                 ),
-                onPressed: () {},
-                child: const Text("CREATE ACCOUNT"),
+                onPressed: () {GoRouter.of(context).go('/home');},
+                child: const Text(
+                  "Log In",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
             ),
-
-            /// aita akta Navigator hoia jabe
           ],
         ),
       ),

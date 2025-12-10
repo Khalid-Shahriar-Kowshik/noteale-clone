@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:noteale_clone/utils/colors.dart';
 
 class OnboardingView extends StatefulWidget {
@@ -73,7 +74,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorsUtil.primaryColor,
                       ),
-                      onPressed: () {},
+                      onPressed: () { GoRouter.of(context).push('/createAccount'); },
                       child: const Text("CREATE ACCOUNT"),
                     ),
                   ),
@@ -84,7 +85,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorsUtil.secondaryColor,
                       ),
-                      onPressed: () {},
+                        onPressed: () {GoRouter.of(context).push('/login');},
                       child: const Text("LOG IN"),
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:noteale_clone/utils/colors.dart';
 
 class CreateAccountView extends StatelessWidget {
@@ -12,11 +13,11 @@ class CreateAccountView extends StatelessWidget {
         backgroundColor: ColorsUtil.backgroundColor,
         title: const Text('Create Account', style: TextStyle(fontSize: 18)),
         leading: IconButton(
-          onPressed: () => {},
+          onPressed: () => {GoRouter.of(context).pop()},
           icon: Icon(Icons.arrow_back, color: ColorsUtil.primaryColor),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +47,6 @@ class CreateAccountView extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
-
             TextFormField(
               decoration: InputDecoration(
                 filled: true,
@@ -159,10 +159,10 @@ class CreateAccountView extends StatelessWidget {
                 color: ColorsUtil.primaryColor,
                 fontWeight: FontWeight.bold,
                 decoration: TextDecoration.underline,
+                decorationColor: ColorsUtil.primaryColor,
               ),
             ),
-
-            SizedBox(height: 100),
+            SizedBox(height: 80),
             Text.rich(
               TextSpan(
                 style: const TextStyle(fontSize: 18),
@@ -186,18 +186,19 @@ class CreateAccountView extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
+            SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorsUtil.primaryColor,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  GoRouter.of(context).push('/login');
+                },
                 child: const Text("CREATE ACCOUNT"),
               ),
             ),
-
-            /// aita akta Navigator hoia jabe
           ],
         ),
       ),

@@ -1,15 +1,65 @@
-import 'package:flutter/material.dart';
-import 'package:noteale_clone/utils/colors.dart';
+import 'dart:developer';
 
-class HomeView extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:noteale_clone/utils/colors.dart';
+import 'package:noteale_clone/views/profile_view.dart';
+
+class HomeView extends StatefulWidget {
   const HomeView({super.key, required this.title});
 
   final String title;
 
   @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  int currentIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
+    List<Widget> pages = [
+      HomeWidget(title: widget.title),
+      Container(),
+      ProfileView(),
+    ];
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+
+      body: pages[currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: ColorsUtil.bottomNavBarColor,
+        selectedItemColor: Colors.amberAccent,
+        currentIndex: currentIndex,
+        onTap: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.note_alt_outlined),
+            label: "Notes",
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.camera), label: "OCR"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outlined),
+            label: "Me",
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class HomeWidget extends StatelessWidget {
+  const HomeWidget({super.key, required this.title});
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       appBar: AppBar(
         iconTheme: const IconThemeData(color: ColorsUtil.primaryColor),
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
@@ -18,10 +68,8 @@ class HomeView extends StatelessWidget {
           IconButton(onPressed: null, icon: const Icon(Icons.search)),
           IconButton(onPressed: null, icon: const Icon(Icons.filter_list)),
           IconButton(onPressed: null, icon: const Icon(Icons.grid_view)),
-          IconButton(onPressed: null, icon: const Icon(Icons.more_vert)),
         ],
       ),
-
       drawer: Drawer(
         child: Container(
           decoration: const BoxDecoration(
@@ -54,7 +102,6 @@ class HomeView extends StatelessWidget {
                   ),
                 ),
                 const Divider(color: Colors.black54),
-                // Menu items
                 const ListTile(title: Text('Forgot Password')),
                 const ListTile(title: Text('Privacy Policy')),
                 const ListTile(title: Text('Terms of Use')),
@@ -63,32 +110,68 @@ class HomeView extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: Builder(
+        builder: (fabContext) => FloatingActionButton(
+          onPressed: () async {
+            final RenderBox button =
+                fabContext.findRenderObject() as RenderBox;
+            final RenderBox overlay =
+                Overlay.of(fabContext).context.findRenderObject() as RenderBox;
+            final Offset buttonOffset =
+                button.localToGlobal(Offset.zero, ancestor: overlay);
 
+            final selection = await showMenu<String>(
+              context: fabContext,
+              position: RelativeRect.fromLTRB(
+                buttonOffset.dx,
+                buttonOffset.dy,
+                overlay.size.width - buttonOffset.dx - button.size.width,
+                overlay.size.height - buttonOffset.dy - button.size.height,
+              ),
+              items:  [
+                PopupMenuItem<String>(
+                  value: 'note',
+                  child: ListTile(
+                    leading: Icon(Icons.note_add_outlined),
+                    title: Text('New note'),
+                     onTap: () {GoRouter.of(context).push('/notes');},
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'checklist',
+                  child: ListTile(
+                    leading: Icon(Icons.checklist_rtl),
+                    title: Text('New checklist'),
+                    onTap: () {GoRouter.of(context).push('/todo');},
+                  ),
+                ),
+               
+              ],
+            );
+
+            if (selection != null) {
+              log('FAB action selected: $selection');
+            }
+          },
+          backgroundColor: ColorsUtil.primaryColor,
+          foregroundColor: ColorsUtil.secondaryColor,
+          shape: const CircleBorder(),
+          child: const Icon(Icons.add),
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('You have pushed the button this many times:'),
-            // Stateless - show a static counter value
-            Text('0', style: Theme.of(context).textTheme.headlineMedium),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/rafiki.png', width: 207.65, height: 209.01),
+                const Text("Create your first note !"),
+              ],
+            ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: 
-         const [
-          BottomNavigationBarItem(icon: Icon(Icons.note),label:"Notes"),
-          BottomNavigationBarItem(icon: Icon(Icons.camera),label:"OCR"),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outlined),label:"Me"),
-         
-
-          ]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {}, // disabled in stateless version
-        backgroundColor: ColorsUtil.primaryColor,
-        foregroundColor: ColorsUtil.secondaryColor,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add),
       ),
     );
   }
