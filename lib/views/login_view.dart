@@ -1,9 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:noteale_clone/utils/colors.dart';
+import 'package:noteale_clone/viewmodels/auth_viewmodel.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
+
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    final authVM = context.read<AuthViewModel>();
+
+    final success = await authVM.login(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+
+    if (success && mounted) {
+      GoRouter.of(context).go('/home');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +43,7 @@ class LoginView extends StatelessWidget {
         backgroundColor: ColorsUtil.backgroundColor,
         title: const Text('Log In', style: TextStyle(fontSize: 18)),
         leading: IconButton(
-          onPressed: () => {GoRouter.of(context).pop()},
+          onPressed: () => GoRouter.of(context).pop(),
           icon: Icon(Icons.arrow_back, color: ColorsUtil.primaryColor),
         ),
       ),
@@ -46,13 +76,48 @@ class LoginView extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            // Error message
+            Consumer<AuthViewModel>(
+              builder: (context, authVM, _) {
+                if (authVM.errorMessage != null) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              authVM.errorMessage!,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.red),
+                            onPressed: () => authVM.clearError(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
             TextFormField(
+              controller: _emailController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: ColorsUtil.secondaryColor,
                 contentPadding: const EdgeInsets.all(16),
-                labelText: 'Username',
+                labelText: 'Email',
                 prefixIcon: const Icon(
                   Icons.person,
                   color: ColorsUtil.primaryColor,
@@ -70,9 +135,11 @@ class LoginView extends StatelessWidget {
                   borderSide: BorderSide(color: ColorsUtil.primaryColor),
                 ),
               ),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 12),
             TextFormField(
+              controller: _passwordController,
               decoration: InputDecoration(
                 filled: true,
                 fillColor: ColorsUtil.secondaryColor,
@@ -100,14 +167,13 @@ class LoginView extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [
+              children: const [
                 Text("Forgot Password ?", style: TextStyle(fontSize: 18)),
               ],
             ),
-            SizedBox(height: 60),
-            Text("Don't have an account yet ?", style: TextStyle(fontSize: 18)),
-            SizedBox(height: 2),
-
+            const SizedBox(height: 60),
+            const Text("Don't have an account yet ?", style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 2),
             GestureDetector(
               onTap: () {
                 GoRouter.of(context).push('/createAccount');
@@ -123,22 +189,32 @@ class LoginView extends StatelessWidget {
                 ),
               ),
             ),
-
-            SizedBox(height: 80),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorsUtil.primaryColor,
-                ),
-                onPressed: () {
-                  GoRouter.of(context).go('/home');
-                },
-                child: const Text(
-                  "Log In",
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
+            const SizedBox(height: 80),
+            Consumer<AuthViewModel>(
+              builder: (context, authVM, _) {
+                return SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorsUtil.primaryColor,
+                    ),
+                    onPressed: authVM.isLoading ? null : _handleLogin,
+                    child: authVM.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : const Text(
+                            "Log In",
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                  ),
+                );
+              },
             ),
           ],
         ),

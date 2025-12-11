@@ -25,11 +25,14 @@ class _HomeViewState extends State<HomeView> {
       ProfileView(),
     ];
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: ColorsUtil.bottomNavBarColor,
+        backgroundColor: Theme.of(context).brightness == Brightness.light
+            ? ColorsUtil.backgroundColor
+            : (Theme.of(context).bottomAppBarTheme.color ??
+                  Theme.of(context).colorScheme.surface),
         selectedItemColor: Colors.amberAccent,
         currentIndex: currentIndex,
         onTap: (index) {
@@ -61,18 +64,45 @@ class HomeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: ColorsUtil.primaryColor),
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        title: Text(title),
+        iconTheme: IconThemeData(
+          color:
+              Theme.of(context).appBarTheme.foregroundColor ??
+              ColorsUtil.primaryColor,
+        ),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        title: Text(
+          title,
+          style: TextStyle(
+            color: Theme.of(context).appBarTheme.foregroundColor,
+          ),
+        ),
         actions: [
-          IconButton(onPressed: null, icon: const Icon(Icons.search)),
-          IconButton(onPressed: null, icon: const Icon(Icons.filter_list)),
-          IconButton(onPressed: null, icon: const Icon(Icons.grid_view)),
+          IconButton(
+            onPressed: null,
+            icon: Icon(
+              Icons.search,
+              color: Theme.of(context).appBarTheme.foregroundColor,
+            ),
+          ),
+          IconButton(
+            onPressed: null,
+            icon: Icon(
+              Icons.filter_list,
+              color: Theme.of(context).appBarTheme.foregroundColor,
+            ),
+          ),
+          IconButton(
+            onPressed: null,
+            icon: Icon(
+              Icons.grid_view,
+              color: Theme.of(context).appBarTheme.foregroundColor,
+            ),
+          ),
         ],
       ),
 
       ///Drawer Disabled ///
-      
+
       // drawer: Drawer(
       //   child: Container(
       //     decoration: const BoxDecoration(
@@ -113,18 +143,16 @@ class HomeWidget extends StatelessWidget {
       //     ),
       //   ),
       // ),
-
-
-      
       floatingActionButton: Builder(
         builder: (fabContext) => FloatingActionButton(
           onPressed: () async {
-            final RenderBox button =
-                fabContext.findRenderObject() as RenderBox;
+            final RenderBox button = fabContext.findRenderObject() as RenderBox;
             final RenderBox overlay =
                 Overlay.of(fabContext).context.findRenderObject() as RenderBox;
-            final Offset buttonOffset =
-                button.localToGlobal(Offset.zero, ancestor: overlay);
+            final Offset buttonOffset = button.localToGlobal(
+              Offset.zero,
+              ancestor: overlay,
+            );
 
             final selection = await showMenu<String>(
               context: fabContext,
@@ -134,13 +162,15 @@ class HomeWidget extends StatelessWidget {
                 overlay.size.width - buttonOffset.dx - button.size.width,
                 overlay.size.height - buttonOffset.dy - button.size.height,
               ),
-              items:  [
+              items: [
                 PopupMenuItem<String>(
                   value: 'note',
                   child: ListTile(
                     leading: Icon(Icons.note_add_outlined),
                     title: Text('New note'),
-                     onTap: () {GoRouter.of(context).push('/notes');},
+                    onTap: () {
+                      GoRouter.of(context).push('/notes');
+                    },
                   ),
                 ),
                 PopupMenuItem<String>(
@@ -148,10 +178,11 @@ class HomeWidget extends StatelessWidget {
                   child: ListTile(
                     leading: Icon(Icons.checklist_rtl),
                     title: Text('New checklist'),
-                    onTap: () {GoRouter.of(context).push('/todo');},
+                    onTap: () {
+                      GoRouter.of(context).push('/todo');
+                    },
                   ),
                 ),
-               
               ],
             );
 

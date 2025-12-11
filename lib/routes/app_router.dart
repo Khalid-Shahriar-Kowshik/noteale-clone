@@ -29,7 +29,7 @@ GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/home',
       name: "home",
-      builder: (context, state) => const HomeView(title: "Noteale"),
+      builder: (context, state) => const HomeView(title: "NoteAle"),
     ),
     GoRoute(
       path: '/about',

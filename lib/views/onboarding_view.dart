@@ -22,7 +22,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F1F1),
+      backgroundColor: ColorsUtil.backgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
@@ -74,8 +74,13 @@ class _OnboardingViewState extends State<OnboardingView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorsUtil.primaryColor,
                       ),
-                      onPressed: () { GoRouter.of(context).push('/createAccount'); },
-                      child: const Text("CREATE ACCOUNT"),
+                      onPressed: () {
+                        GoRouter.of(context).push('/createAccount');
+                      },
+                      child: const Text(
+                        "CREATE ACCOUNT",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -85,11 +90,15 @@ class _OnboardingViewState extends State<OnboardingView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: ColorsUtil.secondaryColor,
                       ),
-                        onPressed: () {GoRouter.of(context).push('/login');},
-                      child: const Text("LOG IN"),
+                      onPressed: () {
+                        GoRouter.of(context).push('/login');
+                      },
+                      child: Text(
+                        "LOG IN",
+                        style: TextStyle(color: ColorsUtil.primaryColor),
+                      ),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -123,11 +132,15 @@ class OnboardingSection3 extends StatelessWidget {
               children: [
                 const Text(
                   "Image to Text Converter",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const Text(
                   "Upload your images and convert to text",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 18, color: Colors.black),
                 ),
               ],
             ),
@@ -159,11 +172,15 @@ class OnboardingSection2 extends StatelessWidget {
               children: [
                 const Text(
                   "To Dos",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const Text(
                   "list out your day-to-day tasks",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 18, color: Colors.black),
                 ),
               ],
             ),
@@ -191,11 +208,19 @@ class OnboardingSection1 extends StatelessWidget {
                 SizedBox(width: 8),
                 Text(
                   'WELCOME TO',
-                  style: TextStyle(fontSize: 18, fontFamily: "Roboto"),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "Roboto",
+                    color: Colors.black,
+                  ),
                 ),
                 Text(
                   "HaBIT NOTE",
-                  style: TextStyle(fontSize: 18, fontFamily: "FugazOne"),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: "FugazOne",
+                    color: Colors.black,
+                  ),
                 ),
               ],
             ),
@@ -214,11 +239,15 @@ class OnboardingSection1 extends StatelessWidget {
               children: [
                 const Text(
                   "Take Notes",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const Text(
                   "Quickly capture what’s on your mind",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 18, color: Colors.black),
                 ),
               ],
             ),

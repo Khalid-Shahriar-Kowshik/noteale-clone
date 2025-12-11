@@ -95,6 +95,7 @@ class ProfileView extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
+                                          color: Colors.black,
                                         ),
                                       ),
                                       SizedBox(height: 12),
@@ -103,6 +104,7 @@ class ProfileView extends StatelessWidget {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w200,
+                                          color: Colors.grey,
                                         ),
                                       ),
                                     ],
@@ -128,12 +130,16 @@ class ProfileView extends StatelessWidget {
                                             ), // Square corners
                                           ),
                                         ),
-                                        child: const Text('Cancel'),
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
-                                          GoRouter.of(context)
-                                              .go('/onboarding');
+                                          GoRouter.of(
+                                            context,
+                                          ).go('/onboarding');
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor:
@@ -144,7 +150,10 @@ class ProfileView extends StatelessWidget {
                                             ), // Square corners
                                           ),
                                         ),
-                                        child: const Text('Logout'),
+                                        child: const Text(
+                                          'Logout',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                       ),
                                     ],
                                   ),
