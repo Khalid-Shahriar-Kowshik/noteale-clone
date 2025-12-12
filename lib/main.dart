@@ -21,13 +21,14 @@ class MyApp extends StatelessWidget {
           create: (_) => ThemeViewModel(initialMode: ThemeMode.system),
         ),
         ChangeNotifierProvider<AuthViewModel>(create: (_) => AuthViewModel()),
+        
       ],
       child: Consumer<ThemeViewModel>(
         builder: (context, themeVM, _) {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             routerConfig: appRouter,
-            title: 'Flutter Demo',
+            title: 'Noteale',
             theme: lightTheme,
             darkTheme: darkTheme,
             themeMode: themeVM.themeMode,

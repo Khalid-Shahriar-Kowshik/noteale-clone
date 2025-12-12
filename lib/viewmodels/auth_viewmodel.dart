@@ -6,7 +6,7 @@ class AuthViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
-  // In-memory user storage (replace with backend/database in production)
+
   final List<UserModel> _registeredUsers = [];
 
   UserModel? get currentUser => _currentUser;
@@ -29,8 +29,7 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Create a new user account
-  /// Returns true on success, false on failure
+ 
   Future<bool> createUser({
     required String name,
     required String email,
@@ -58,15 +57,13 @@ class AuthViewModel extends ChangeNotifier {
 
     _setLoading(true);
 
-    // Simulate network delay to mimic a backend call.
-    await Future.delayed(const Duration(milliseconds: 800));
 
     try {
       final newUser = UserModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: trimmedName,
         email: normalizedEmail,
-        password: password, // In production, hash the password!
+        password: password, 
       );
 
       _registeredUsers.add(newUser);
@@ -81,8 +78,7 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  /// Log in with username (email) and password
-  /// Returns true on success, false on failure
+
   Future<bool> login({required String email, required String password}) async {
     clearError();
 
@@ -94,8 +90,7 @@ class AuthViewModel extends ChangeNotifier {
 
     _setLoading(true);
 
-    // Simulate network delay to mimic a backend call.
-    await Future.delayed(const Duration(milliseconds: 800));
+ 
 
     try {
       UserModel? foundUser;
