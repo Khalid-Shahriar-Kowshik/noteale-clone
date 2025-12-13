@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:noteale_clone/routes/app_router.dart';
 import 'package:noteale_clone/viewmodels/theme_viewmodel.dart';
 import 'package:noteale_clone/viewmodels/auth_viewmodel.dart';
+import 'package:noteale_clone/viewmodels/notes_viewmodel.dart';
 import 'package:noteale_clone/utils/themes.dart';
 
 void main() {
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
           create: (_) => ThemeViewModel(initialMode: ThemeMode.system),
         ),
         ChangeNotifierProvider<AuthViewModel>(create: (_) => AuthViewModel()),
-        
+        ChangeNotifierProvider<NotesViewmodel>(create: (_) => NotesViewmodel()),
       ],
       child: Consumer<ThemeViewModel>(
         builder: (context, themeVM, _) {

@@ -227,7 +227,10 @@ class _CreateAccountViewState extends State<CreateAccountView> {
               obscureText: true,
             ),
             const SizedBox(height: 10),
-            const Text("Already have an account?", style: TextStyle(fontSize: 18)),
+            const Text(
+              "Already have an account?",
+              style: TextStyle(fontSize: 18),
+            ),
             const SizedBox(height: 5),
             GestureDetector(
               onTap: () => GoRouter.of(context).push('/login'),
@@ -275,17 +278,8 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorsUtil.primaryColor,
                     ),
-                    onPressed: authVM.isLoading ? null : _handleCreateAccount,
-                    child: authVM.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Text("CREATE ACCOUNT"),
+                    onPressed: _handleCreateAccount,
+                    child: const Text("CREATE ACCOUNT"),
                   ),
                 );
               },

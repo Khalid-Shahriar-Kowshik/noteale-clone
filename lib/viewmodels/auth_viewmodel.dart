@@ -3,21 +3,13 @@ import 'package:noteale_clone/models/user_model.dart';
 
 class AuthViewModel extends ChangeNotifier {
   UserModel? _currentUser;
-  bool _isLoading = false;
   String? _errorMessage;
-
 
   final List<UserModel> _registeredUsers = [];
 
   UserModel? get currentUser => _currentUser;
-  bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _currentUser != null;
-
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
 
   void _setError(String? message) {
     _errorMessage = message;
@@ -29,7 +21,6 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
- 
   Future<bool> createUser({
     required String name,
     required String email,
@@ -55,29 +46,22 @@ class AuthViewModel extends ChangeNotifier {
       return false;
     }
 
-    _setLoading(true);
-
-
     try {
       final newUser = UserModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: trimmedName,
         email: normalizedEmail,
-        password: password, 
+        password: password,
       );
 
       _registeredUsers.add(newUser);
       _currentUser = newUser;
-
-      _setLoading(false);
       return true;
     } catch (e) {
-      _setLoading(false);
       _setError('Failed to create account. Please try again.');
       return false;
     }
   }
-
 
   Future<bool> login({required String email, required String password}) async {
     clearError();
@@ -87,10 +71,6 @@ class AuthViewModel extends ChangeNotifier {
     if (!_validateLoginInput(email: normalizedEmail, password: password)) {
       return false;
     }
-
-    _setLoading(true);
-
- 
 
     try {
       UserModel? foundUser;
@@ -106,16 +86,13 @@ class AuthViewModel extends ChangeNotifier {
       }
 
       if (foundUser == null) {
-        _setLoading(false);
         _setError('Invalid email or password');
         return false;
       }
 
       _currentUser = foundUser;
-      _setLoading(false);
       return true;
     } catch (e) {
-      _setLoading(false);
       _setError('Login failed. Please try again.');
       return false;
     }
@@ -127,8 +104,9 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+// idk
   bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+    return RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email);
   }
 
   bool _validateRegistrationInput({

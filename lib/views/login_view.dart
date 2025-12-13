@@ -172,7 +172,10 @@ class _LoginViewState extends State<LoginView> {
               ],
             ),
             const SizedBox(height: 60),
-            const Text("Don't have an account yet ?", style: TextStyle(fontSize: 18)),
+            const Text(
+              "Don't have an account yet ?",
+              style: TextStyle(fontSize: 18),
+            ),
             const SizedBox(height: 2),
             GestureDetector(
               onTap: () {
@@ -198,20 +201,11 @@ class _LoginViewState extends State<LoginView> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorsUtil.primaryColor,
                     ),
-                    onPressed: authVM.isLoading ? null : _handleLogin,
-                    child: authVM.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Text(
-                            "Log In",
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
+                    onPressed: _handleLogin,
+                    child: const Text(
+                      "Log In",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                   ),
                 );
               },

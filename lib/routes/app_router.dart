@@ -47,6 +47,11 @@ GoRouter appRouter = GoRouter(
       builder: (context, state) => const ToDoListView(),
     ),
     GoRoute(
+      path: '/notes/:id',
+      name: "note_view",
+      builder: (context, state) => NoteView(noteId: state.pathParameters['id']),
+    ),
+    GoRoute(
       path: '/notes',
       name: "notes",
       builder: (context, state) => const NoteView(),
