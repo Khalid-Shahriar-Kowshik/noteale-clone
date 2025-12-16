@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:noteale_clone/utils/colors.dart';
-import 'package:provider/provider.dart';
+
 import 'package:noteale_clone/viewmodels/theme_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});
@@ -45,6 +46,7 @@ class _SettingsViewState extends State<SettingsView> {
               },
             ),
             const SizedBox(height: 16),
+           
           ],
         ),
       ),

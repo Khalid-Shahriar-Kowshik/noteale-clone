@@ -1,15 +1,45 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:noteale_clone/models/user_model.dart';
+import 'package:noteale_clone/sqlite/database_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthViewModel extends ChangeNotifier {
   UserModel? _currentUser;
   String? _errorMessage;
+  bool _isRestoringSession = true;
 
-  final List<UserModel> _registeredUsers = [];
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+
+  static const _sessionKey = 'currentUserId';
 
   UserModel? get currentUser => _currentUser;
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _currentUser != null;
+  bool get isRestoringSession => _isRestoringSession;
+
+  Future<void> restoreSession() async {
+    _isRestoringSession = true;
+    final prefs = await SharedPreferences.getInstance();
+    final storedId = prefs.getString(_sessionKey);
+    if (storedId == null) {
+      _isRestoringSession = false;
+      notifyListeners();
+      return;
+    }
+
+    final user = await _dbHelper.getUserById(storedId);
+    if (user != null) {
+      _currentUser = user;
+    } else {
+      await prefs.remove(_sessionKey);
+    }
+
+    _isRestoringSession = false;
+    notifyListeners();
+  }
 
   void _setError(String? message) {
     _errorMessage = message;
@@ -41,7 +71,7 @@ class AuthViewModel extends ChangeNotifier {
       return false;
     }
 
-    if (_emailExists(normalizedEmail)) {
+    if (await _emailExists(normalizedEmail)) {
       _setError('An account with this email already exists');
       return false;
     }
@@ -51,11 +81,14 @@ class AuthViewModel extends ChangeNotifier {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: trimmedName,
         email: normalizedEmail,
-        password: password,
+        password: _hashPassword(password),
       );
 
-      _registeredUsers.add(newUser);
+      await _dbHelper.insertUser(newUser);
       _currentUser = newUser;
+      await _persistSession(newUser.id);
+      _isRestoringSession = false;
+      notifyListeners();
       return true;
     } catch (e) {
       _setError('Failed to create account. Please try again.');
@@ -73,24 +106,22 @@ class AuthViewModel extends ChangeNotifier {
     }
 
     try {
-      UserModel? foundUser;
-
-      for (final user in _registeredUsers) {
-        final sameEmail = user.email.toLowerCase() == normalizedEmail;
-        final samePassword = user.password == password;
-
-        if (sameEmail && samePassword) {
-          foundUser = user;
-          break;
-        }
-      }
+      final foundUser = await _dbHelper.getUserByEmail(normalizedEmail);
 
       if (foundUser == null) {
         _setError('Invalid email or password');
         return false;
       }
 
+      if (foundUser.password != _hashPassword(password)) {
+        _setError('Invalid email or password');
+        return false;
+      }
+
       _currentUser = foundUser;
+      await _persistSession(foundUser.id);
+      _isRestoringSession = false;
+      notifyListeners();
       return true;
     } catch (e) {
       _setError('Login failed. Please try again.');
@@ -101,10 +132,12 @@ class AuthViewModel extends ChangeNotifier {
   /// Log out the current user
   void logout() {
     _currentUser = null;
+    _clearSession();
+    _isRestoringSession = false;
     notifyListeners();
   }
 
-// idk
+  // idk
   bool _isValidEmail(String email) {
     return RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(email);
   }
@@ -155,12 +188,23 @@ class AuthViewModel extends ChangeNotifier {
     return true;
   }
 
-  bool _emailExists(String email) {
-    for (final user in _registeredUsers) {
-      if (user.email.toLowerCase() == email.toLowerCase()) {
-        return true;
-      }
-    }
-    return false;
+  Future<bool> _emailExists(String email) async {
+    final existing = await _dbHelper.getUserByEmail(email);
+    return existing != null;
+  }
+
+  String _hashPassword(String password) {
+    final bytes = utf8.encode(password);
+    return sha256.convert(bytes).toString();
+  }
+
+  Future<void> _persistSession(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_sessionKey, userId);
+  }
+
+  Future<void> _clearSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_sessionKey);
   }
 }

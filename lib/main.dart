@@ -7,6 +7,7 @@ import 'package:noteale_clone/viewmodels/notes_viewmodel.dart';
 import 'package:noteale_clone/utils/themes.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -21,14 +22,17 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ThemeViewModel>(
           create: (_) => ThemeViewModel(initialMode: ThemeMode.system),
         ),
-        ChangeNotifierProvider<AuthViewModel>(create: (_) => AuthViewModel()),
+        ChangeNotifierProvider<AuthViewModel>(
+          create: (_) => AuthViewModel()..restoreSession(),
+        ),
         ChangeNotifierProvider<NotesViewmodel>(create: (_) => NotesViewmodel()),
       ],
-      child: Consumer<ThemeViewModel>(
-        builder: (context, themeVM, _) {
+      child: Consumer2<ThemeViewModel, AuthViewModel>(
+        builder: (context, themeVM, authVM, _) {
+          final router = buildRouter(authVM);
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            routerConfig: appRouter,
+            routerConfig: router,
             title: 'Noteale',
             theme: lightTheme,
             darkTheme: darkTheme,
