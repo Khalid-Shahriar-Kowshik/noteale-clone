@@ -4,6 +4,7 @@ import 'package:noteale_clone/utils/colors.dart';
 import 'package:provider/provider.dart';
 import 'package:noteale_clone/viewmodels/notes_viewmodel.dart';
 import 'package:noteale_clone/models/notes_model.dart';
+import 'package:noteale_clone/viewmodels/auth_viewmodel.dart';
 
 class NoteView extends StatefulWidget {
   final String? noteId;
@@ -55,42 +56,51 @@ class _AddNotePageState extends State<NoteView> {
                 _isEditing ? Icons.check : Icons.edit,
                 color: Colors.black,
               ),
-              onPressed: () {
+              onPressed: () async {
+                final userId = context.read<AuthViewModel>().currentUser?.id;
+                if (userId == null || _existingNote == null) return;
+
                 setState(() {
                   if (_isEditing) {
                     // Save changes
-                    final updated = NotesModel(
-                      id: _existingNote!.id,
-                      title: _titleController.text.trim(),
-                      content: _contentController.text.trim(),
-                      colorHex: _selectedColorHex,
-                      createdAt: _existingNote!.createdAt,
-                    );
-                    Provider.of<NotesViewmodel>(
-                      context,
-                      listen: false,
-                    ).updateNote(updated);
-                    _existingNote = updated;
-                    _isEditing = false;
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(const SnackBar(content: Text('Note saved')));
                   } else {
                     _isEditing = true;
                   }
                 });
+
+                if (_isEditing) {
+                  final updated = NotesModel(
+                    id: _existingNote!.id,
+                    userId: _existingNote!.userId,
+                    title: _titleController.text.trim(),
+                    content: _contentController.text.trim(),
+                    colorHex: _selectedColorHex,
+                    createdAt: _existingNote!.createdAt,
+                  );
+                  await context.read<NotesViewmodel>().updateNote(updated);
+                  setState(() {
+                    _existingNote = updated;
+                    _isEditing = false;
+                  });
+                  if (mounted) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text('Note saved')));
+                  }
+                }
               },
             ),
           if (_isExisting)
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.black),
-              onPressed: () {
+              onPressed: () async {
                 if (_existingNote != null) {
-                  Provider.of<NotesViewmodel>(
-                    context,
-                    listen: false,
-                  ).removeNote(_existingNote!);
-                  GoRouter.of(context).pop();
+                  await context.read<NotesViewmodel>().removeNote(
+                    _existingNote!,
+                  );
+                  if (mounted) {
+                    GoRouter.of(context).pop();
+                  }
                 }
               },
             ),
@@ -103,7 +113,20 @@ class _AddNotePageState extends State<NoteView> {
             Consumer<NotesViewmodel>(
               builder: (context, notesVM, _) {
                 return ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    final userId = context
+                        .read<AuthViewModel>()
+                        .currentUser
+                        ?.id;
+                    if (userId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please log in to save notes.'),
+                        ),
+                      );
+                      return;
+                    }
+
                     final title = _titleController.text.trim();
                     final content = _contentController.text.trim();
 
@@ -122,28 +145,34 @@ class _AddNotePageState extends State<NoteView> {
                       // update existing note in-place
                       final updated = NotesModel(
                         id: _existingNote!.id,
+                        userId: _existingNote!.userId,
                         title: title,
                         content: content,
                         colorHex: _selectedColorHex, // use chosen color
                         createdAt: _existingNote!.createdAt,
                       );
-                      notesVM.updateNote(updated);
+                      await notesVM.updateNote(updated);
                       setState(() {
                         _existingNote = updated;
                         _isEditing = false;
                       });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Note saved')),
-                      );
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Note saved')),
+                        );
+                      }
                     } else {
                       final newNote = NotesModel(
+                        userId: userId,
                         title: title,
                         content: content,
                         colorHex: _selectedColorHex, // use chosen color
                         createdAt: DateTime.now(),
                       );
-                      notesVM.addNote(newNote);
-                      GoRouter.of(context).pop();
+                      await notesVM.addNote(newNote);
+                      if (mounted) {
+                        GoRouter.of(context).pop();
+                      }
                     }
                   },
                   child: Text(_isExisting ? 'Save Changes' : 'Save Note'),

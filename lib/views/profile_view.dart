@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:noteale_clone/utils/colors.dart';
 import 'package:noteale_clone/viewmodels/auth_viewmodel.dart';
+import 'package:noteale_clone/viewmodels/notes_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ProfileView extends StatelessWidget {
@@ -166,6 +167,10 @@ class ProfileView extends StatelessWidget {
                                             label: const Text('Logout'),
                                             onPressed: () {
                                               Navigator.of(dialogContext).pop();
+                                              // Clear notes before logout for security
+                                              context
+                                                  .read<NotesViewmodel>()
+                                                  .clearNotes();
                                               context
                                                   .read<AuthViewModel>()
                                                   .logout();

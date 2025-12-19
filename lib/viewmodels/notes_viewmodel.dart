@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:noteale_clone/models/notes_model.dart';
+import 'package:noteale_clone/sqlite/database_helper.dart';
 
 class NotesViewmodel extends ChangeNotifier {
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+
   final List<NotesModel> _notes = [];
+  String? _currentUserId;
   String _searchQuery = '';
   String? _selectedFilterColorHex; // null = no filter
 
   List<NotesModel> get notes => List.unmodifiable(_notes);
+  String? get currentUserId => _currentUserId;
 
   /// Notes filtered by search query and optional color hex filter.
   List<NotesModel> get filteredNotes {
@@ -20,9 +25,7 @@ class NotesViewmodel extends ChangeNotifier {
     }
 
     if (colorHex != null) {
-      result = result.where(
-        (n) => (n.colorHex ?? '').toLowerCase() == colorHex,
-      );
+      result = result.where((n) => n.colorHex.toLowerCase() == colorHex);
     }
 
     return result.toList(growable: false);
@@ -30,6 +33,15 @@ class NotesViewmodel extends ChangeNotifier {
 
   String get searchQuery => _searchQuery;
   String? get selectedFilterColorHex => _selectedFilterColorHex;
+
+  Future<void> loadNotesForUser(String userId) async {
+    _currentUserId = userId;
+    final items = await _dbHelper.getNotesForUser(userId);
+    _notes
+      ..clear()
+      ..addAll(items);
+    notifyListeners();
+  }
 
   void setSearchQuery(String query) {
     _searchQuery = query;
@@ -41,7 +53,11 @@ class NotesViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addNote(NotesModel note) {
+  Future<void> addNote(NotesModel note) async {
+    if (_currentUserId == null || note.userId != _currentUserId) {
+      throw StateError('No user set for notes or mismatched user');
+    }
+    await _dbHelper.insertNote(note);
     _notes.add(note);
     notifyListeners();
   }
@@ -54,7 +70,11 @@ class NotesViewmodel extends ChangeNotifier {
     }
   }
 
-  void updateNote(NotesModel updated) {
+  Future<void> updateNote(NotesModel updated) async {
+    if (_currentUserId == null || updated.userId != _currentUserId) {
+      throw StateError('No user set for notes or mismatched user');
+    }
+    await _dbHelper.updateNote(updated);
     final idx = _notes.indexWhere((n) => n.id == updated.id);
     if (idx != -1) {
       _notes[idx] = updated;
@@ -62,8 +82,15 @@ class NotesViewmodel extends ChangeNotifier {
     }
   }
 
-  void removeNote(NotesModel note) {
-    _notes.remove(note);
+  Future<void> removeNote(NotesModel note) async {
+    await _dbHelper.deleteNote(note.id);
+    _notes.removeWhere((n) => n.id == note.id);
+    notifyListeners();
+  }
+
+  void clearNotes() {
+    _notes.clear();
+    _currentUserId = null;
     notifyListeners();
   }
 }

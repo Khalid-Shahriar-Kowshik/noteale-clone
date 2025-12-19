@@ -14,6 +14,24 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _canSubmit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_updateCanSubmit);
+    _passwordController.addListener(_updateCanSubmit);
+    _updateCanSubmit();
+  }
+
+  void _updateCanSubmit() {
+    final next =
+        _emailController.text.trim().isNotEmpty &&
+        _passwordController.text.isNotEmpty;
+    if (next != _canSubmit) {
+      setState(() => _canSubmit = next);
+    }
+  }
 
   @override
   void dispose() {
@@ -25,12 +43,30 @@ class _LoginViewState extends State<LoginView> {
   Future<void> _handleLogin() async {
     final authVM = context.read<AuthViewModel>();
 
+    // Local guard: prevent submitting empty fields
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter email and password.')),
+      );
+      return;
+    }
+
     final success = await authVM.login(
       email: _emailController.text,
       password: _passwordController.text,
     );
 
-    if (success && mounted) {
+    if (!success) {
+      if (!mounted) return;
+      final message = authVM.errorMessage ?? 'Login failed. Please try again.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+      return; // stay on login screen
+    }
+
+    if (mounted) {
       GoRouter.of(context).go('/home');
     }
   }
@@ -201,7 +237,7 @@ class _LoginViewState extends State<LoginView> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorsUtil.primaryColor,
                     ),
-                    onPressed: _handleLogin,
+                    onPressed: _canSubmit ? _handleLogin : null,
                     child: const Text(
                       "Log In",
                       style: TextStyle(fontSize: 18, color: Colors.white),

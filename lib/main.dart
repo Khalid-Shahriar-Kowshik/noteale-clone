@@ -5,16 +5,33 @@ import 'package:noteale_clone/viewmodels/theme_viewmodel.dart';
 import 'package:noteale_clone/viewmodels/auth_viewmodel.dart';
 import 'package:noteale_clone/viewmodels/notes_viewmodel.dart';
 import 'package:noteale_clone/utils/themes.dart';
+import 'package:noteale_clone/views/splash_screen_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _showingInitialSplash = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) {
+        setState(() => _showingInitialSplash = false);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -29,6 +46,19 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer2<ThemeViewModel, AuthViewModel>(
         builder: (context, themeVM, authVM, _) {
+          final showSplash = authVM.isRestoringSession || _showingInitialSplash;
+
+          // Show custom splash screen during initial load or while restoring session
+          if (showSplash) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: const SplashScreenView(),
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: themeVM.themeMode,
+            );
+          }
+
           final router = buildRouter(authVM);
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,

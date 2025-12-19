@@ -16,6 +16,28 @@ class _CreateAccountViewState extends State<CreateAccountView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  bool _canSubmit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController.addListener(_updateCanSubmit);
+    _emailController.addListener(_updateCanSubmit);
+    _passwordController.addListener(_updateCanSubmit);
+    _confirmPasswordController.addListener(_updateCanSubmit);
+    _updateCanSubmit();
+  }
+
+  void _updateCanSubmit() {
+    final fieldsFilled =
+        _usernameController.text.trim().isNotEmpty &&
+        _emailController.text.trim().isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _confirmPasswordController.text.isNotEmpty;
+    if (fieldsFilled != _canSubmit) {
+      setState(() => _canSubmit = fieldsFilled);
+    }
+  }
 
   @override
   void dispose() {
@@ -29,6 +51,17 @@ class _CreateAccountViewState extends State<CreateAccountView> {
   Future<void> _handleCreateAccount() async {
     final authVM = context.read<AuthViewModel>();
 
+    // Local guard: prevent submitting empty fields
+    if (_usernameController.text.trim().isEmpty ||
+        _emailController.text.trim().isEmpty ||
+        _passwordController.text.isEmpty ||
+        _confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete all fields.')),
+      );
+      return;
+    }
+
     final success = await authVM.createUser(
       name: _usernameController.text,
       email: _emailController.text,
@@ -36,7 +69,17 @@ class _CreateAccountViewState extends State<CreateAccountView> {
       confirmPassword: _confirmPasswordController.text,
     );
 
-    if (success && mounted) {
+    if (!success) {
+      if (!mounted) return;
+      final message =
+          authVM.errorMessage ?? 'Account creation failed. Please try again.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+      return; // stay on create-account screen
+    }
+
+    if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Account created successfully!')),
       );
@@ -278,7 +321,7 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: ColorsUtil.primaryColor,
                     ),
-                    onPressed: _handleCreateAccount,
+                    onPressed: _canSubmit ? _handleCreateAccount : null,
                     child: const Text("CREATE ACCOUNT"),
                   ),
                 );

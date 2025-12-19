@@ -9,8 +9,13 @@ import 'package:noteale_clone/views/onboarding_view.dart';
 import 'package:noteale_clone/views/settings_view.dart';
 import 'package:noteale_clone/views/todo_list_view.dart';
 
+// Cache the router to avoid recreating it on every rebuild,
+// which can reset to initialLocation unexpectedly.
+GoRouter? _cachedRouter;
+
 GoRouter buildRouter(AuthViewModel auth) {
-  return GoRouter(
+  if (_cachedRouter != null) return _cachedRouter!;
+  _cachedRouter = GoRouter(
     initialLocation: '/onboarding',
     refreshListenable: auth,
     redirect: (context, state) {
@@ -82,4 +87,5 @@ GoRouter buildRouter(AuthViewModel auth) {
       ),
     ],
   );
+  return _cachedRouter!;
 }

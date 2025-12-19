@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:noteale_clone/models/notes_model.dart';
 import 'package:noteale_clone/utils/colors.dart';
+import 'package:noteale_clone/viewmodels/auth_viewmodel.dart';
 import 'package:noteale_clone/viewmodels/notes_viewmodel.dart';
 import 'package:noteale_clone/views/profile_view.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -78,6 +77,13 @@ class _HomeWidgetState extends State<HomeWidget> {
   void initState() {
     super.initState();
     _searchController = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthViewModel>();
+      final userId = auth.currentUser?.id;
+      if (userId != null) {
+        context.read<NotesViewmodel>().loadNotesForUser(userId);
+      }
+    });
   }
 
   @override
